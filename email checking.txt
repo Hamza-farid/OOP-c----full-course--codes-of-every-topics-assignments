@@ -1,0 +1,65 @@
+#include<iostream>
+//#include<string.h>
+using namespace std;
+
+int main()
+{
+	string email;
+	bool valid_email = false;
+
+	while(!valid_email)
+	{
+		bool at_found = false;
+		bool dot_found = false;
+		bool underscore_found = false;
+		cout<<"\nEnter Email Id : ";
+		cin>>email;
+		try
+		{
+			for(int i=0; i <= email.length(); i++)
+			{
+				if (email[i] == '@') 
+				{
+					// If "@" is found, set at_found to true
+					at_found = true; 
+				} 
+						
+				if (email[i] == '.' && at_found) 
+				{
+					// If "." is found after "@", set dot_found to true
+					dot_found = true;
+				}
+						
+				if (email[i] == '_') 
+				{
+					// If "_" is found, throw an exception
+					underscore_found = true;
+				}
+			}	
+					
+			// If "@" or "." is not found, throw an exception
+			if (!at_found)
+			{
+				throw "Email must contain @ symbol";
+			}
+			else if (!dot_found)
+			{
+				throw "Email must contain at least one dot (.) after @ symbol";
+			}
+			else if (underscore_found)
+			{
+				throw "Email cannot contain underscore (_)";
+			}
+			else
+			{
+				valid_email = true;
+				cout << "Valid email address" << endl;
+			}			
+		}
+					
+		catch(const char* s)
+		{
+			cout<<s;
+		}
+	}
+}

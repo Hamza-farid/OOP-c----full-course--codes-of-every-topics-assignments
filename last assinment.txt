@@ -1,0 +1,161 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+class Employee 
+{
+	private:
+    	string name;
+    	int id;
+  	public:
+	    Employee(string n, int i)
+		{
+			name = n;
+			id = i;
+		}
+	    
+	    string getName() 
+		{
+			return name; 
+		}
+	    
+		int getID() 
+		{ 
+			return id; 
+		}
+		
+		virtual double calculatePay() = 0;
+};
+
+class HourlyEmployee : public Employee 
+{
+	private:
+    	double hourlyRate;
+    	double hoursWorked;
+	public:
+	    HourlyEmployee(string n, int i, double r, double h) : Employee(n,i) , hourlyRate(r), hoursWorked (h) {}
+		double calculatePay() 
+		{ 
+			return hourlyRate * hoursWorked; 
+		}
+};
+
+class SalaryEmployee : public Employee 
+{
+	private:
+    	double annualSalary;
+	public:
+	    SalaryEmployee(string n, int i, double s) : Employee(n,i) , annualSalary(s){}
+		double calculatePay() 
+		{ 
+			return annualSalary / 12; 
+		}
+};
+
+class CommissionEmployee : public Employee 
+{
+	private:
+	    double baseSalary;
+	    double totalSales;
+	public:
+	    CommissionEmployee(string n, int i, double b, double s) : Employee(n,i), baseSalary(b), totalSales(s) {}
+	    double calculatePay() 
+		{ 
+			return baseSalary + (totalSales * 0.05); 
+		}
+};
+
+int main() 
+{
+	string name;
+    int id;
+    char choice;
+    string employeeType;
+    double hourlyRate, hoursWorked, annualSalary, baseSalary, totalSales;
+    cout<<"\t\tMy name is Majid\n\t\tMy SAP ID is 15793\n";
+	ofstream outFile;
+    outFile.open("employee_records.txt", ios::app);
+	do
+	{
+		cout<<"\n\tWhich operation you want to perform...!\n";
+		cout<<"\t1. Insert Employees Details\n";
+		cout<<"\t2. View Employees Details\n";
+		cout<<"\tEnter your choice (1 or 2) : ";
+		cin>>choice;
+		if(choice=='1')
+		{
+	    	do
+			{
+				cout << "\n***** Enter employee information *****" << endl;
+			    cout << "Name: ";
+			    cin >> name;
+			    cout << "ID: ";
+				cin >> id;
+			    cout << "Employee type (h, s, or c): ";
+			    cin >> employeeType;
+			    if (employeeType == "h") 
+				{
+			    	cout << "Hourly rate: ";
+			        cin >> hourlyRate;
+			        cout << "Hours worked: ";
+			        cin >> hoursWorked;
+			        Employee* employee = new HourlyEmployee(name, id, hourlyRate, hoursWorked);
+			        outFile << "************************************************" <<endl;
+			        outFile << "Name: " << employee->getName() << endl;
+			        outFile << "ID: " << employee->getID() << endl;
+			        outFile << "Type: Hourly" << endl;
+					outFile << "Pay: $" << employee->calculatePay() << endl;
+			    }
+				 
+				else if (employeeType == "s") 
+				{
+			    	cout << "Annual salary: ";
+			        cin >> annualSalary;
+			        Employee* employee = new SalaryEmployee(name, id, annualSalary);
+			        outFile << "************************************************" <<endl;
+					outFile << "Name: " << employee->getName() << endl;
+			        outFile << "Type: Salary" << endl;
+					outFile << "ID: " << employee->getID() << endl;
+			        outFile << "Pay: $" << employee->calculatePay() << endl;
+			    } 
+				
+				else if (employeeType == "c") 
+				{
+			    	cout << "Base salary: ";
+			        cin >> baseSalary;
+			        cout << "Total sales: ";
+			        cin >> totalSales;
+			        Employee* employee = new CommissionEmployee(name, id, baseSalary, totalSales);
+			        outFile << "************************************************" <<endl;
+			        outFile << "Name: " << employee->getName() << endl;
+			        outFile << "ID: " << employee->getID() << endl;
+			        outFile << "Type: Commission" << endl;
+			        outFile << "Pay: $" << employee->calculatePay() << endl;
+			    }
+				cout << "\nEnter 'y' to enter another employee, or 'n' to quit: ";
+		    	cin >> choice;	
+			}
+			while (choice == 'y');
+			outFile.close();
+	    	cout << "\n***** Employee records saved to file *****" << endl;
+	    }
+		else if(choice=='2')
+		{
+		    ifstream inFile("employee_records.txt");
+		    string line;
+			while (getline(inFile, line)) 
+			{
+			    cout << line << endl;
+			}
+			inFile.close();
+		}
+		else
+		{
+			cout<<"***** Your choice is wrong *****";
+		}
+		cout << "\nDo you want to continue (y or n): ";
+		cin >> choice;
+	}
+	while(choice == 'y');
+	return 0;
+}
